@@ -1,0 +1,7 @@
+{
+  "require": {
+    "upwork/php-upwork": "dev-master",
+    "monolog/monolog": "^1.17",
+    "php-console/php-console": "~3.0"
+  }
+}

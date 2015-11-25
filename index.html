@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <link href="https://cdn.datatables.net/1.10.10/css/jquery.dataTables.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <link href="https://cdn.datatables.net/1.10.10/css/dataTables.bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+
+<table id="upwork" class="display  compact" cellspacing="0" width="100%">
+    <thead>
+    <tr>
+        <th>Id</th>
+        <th>Job Id</th>
+        <th>Url</th>
+        <th>Created_at</th>
+        <th>Title</th>
+        <th>Description</th>
+        <th>Type</th>
+        <th>Budget</th>
+        <th>Engagement</th>
+        <th>EngagementWeeks</th>
+        <th>ContractorTier</th>
+        <th>Skills</th>
+        <th>Rating</th>
+    </tr>
+    </thead>
+    <tfoot>
+    <tr>
+        <th>id</th>
+        <th>job_id</th>
+        <th>Url</th>
+        <th>Created_at</th>
+        <th>Title</th>
+        <th>Description</th>
+        <th>Type</th>
+        <th>Budget</th>
+        <th>Engagement</th>
+        <th>EngagementWeeks</th>
+        <th>ContractorTier</th>
+        <th>Skills</th>
+        <th>Rating</th>
+    </tr>
+    </tfoot>
+</table>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.10/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.10/js/dataTables.bootstrap.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('#upwork').DataTable({
+            "processing": true,
+            "serverSide": true,
+            "ajax": "/get_data.php",
+            "columns": [
+                {"data": "id"},
+                {"data": "job_id"},
+                {"data": "url"},
+                {"data": "created_at"},
+                {"data": "title"},
+                {"data": "description"},
+                {"data": "type"},
+                {"data": "budget"},
+                {"data": "engagement"},
+                {"data": "engagement_weeks"},
+                {"data": "contractor_tier"},
+                {"data": "skills"},
+                {"data": "rating"}
+            ]
+        });
+    });
+</script>
+</body>
+</html>
