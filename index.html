@@ -4,8 +4,11 @@
     <meta charset="UTF-8">
     <title></title>
     <link href="https://cdn.datatables.net/1.10.10/css/jquery.dataTables.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.datatables.net/1.10.10/css/dataTables.bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.datatables.net/select/1.1.0/css/select.dataTables.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-rating/1.3.1/bootstrap-rating.min.css"
+          rel="stylesheet">
 </head>
 <body>
 
@@ -48,28 +51,81 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 <script src="https://cdn.datatables.net/1.10.10/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.10.10/js/dataTables.bootstrap.min.js"></script>
+<script src="https://cdn.datatables.net/select/1.1.0/js/dataTables.select.min.js"></script>
+<!--<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-rating/1.3.1/bootstrap-rating.min.js"></script>-->
+<script src="/bootstrap_rating.js"></script>
 <script>
     $(document).ready(function () {
-        $('#upwork').DataTable({
-            "processing": true,
-            "serverSide": true,
-            "ajax": "/get_data.php",
-            "columns": [
-                {"data": "id"},
-                {"data": "job_id"},
-                {"data": "url"},
-                {"data": "created_at"},
-                {"data": "title"},
-                {"data": "description"},
-                {"data": "type"},
-                {"data": "budget"},
-                {"data": "engagement"},
-                {"data": "engagement_weeks"},
-                {"data": "contractor_tier"},
-                {"data": "skills"},
-                {"data": "rating"}
-            ]
-        });
+        $('#upwork')
+                .on('draw.dt', function () {
+                    bootstrapRating();
+                    $('.rating').on('change', function (event, value) {
+                        var ind = $(this).attr('id');
+                        var val =  $(this).attr('value');
+                        $.post( "/update_rating.php", { id: ind, rating: val} );
+                    });
+                })
+                .DataTable({
+//            "processing": true,
+//            "serverSide": true,
+                    "ajax": "/get_data.php",
+//            "select": true,
+                    "columnDefs": [{
+                        "targets": 2,
+                        "data": "url",
+                        "render": function (data, type, full, meta) {
+                            return '<a href="' + data + '">' + data + '</a>';
+                        }
+                    },
+                        {
+                            "targets": 5,
+                            "data": "description",
+                            "render": function (data, type, full, meta) {
+                                return type === 'display' && data.length > 40 ?
+                                '<span title="' + data + '">' + data.substr(0, 38) + '...</span>' :
+                                        data;
+                            }
+                        },
+                        {
+                            "targets": 12,
+                            "data": "rating",
+                            "render": function (data, type, row, meta) {
+                                return type === 'display' ?'<input type="hidden" id="'+row.id+'" class="rating" ' +
+                                'value="' + data + '" data-show-caption="false" data-size="xs"/>' : data;
+                            }
+                        }
+                    ],
+                    "columns": [
+                        {"data": "id"},
+                        {"data": "job_id"},
+                        {"data": "url"},
+                        {
+                            "data": {
+                                _: "created_at.display",
+                                sort: "created_at.timestamp"
+                            }
+                        },
+                        {"data": "title"},
+                        {"data": "description"},
+                        {"data": "type"},
+                        {"data": "budget"},
+                        {"data": "engagement"},
+                        {"data": "engagement_weeks"},
+                        {"data": "contractor_tier"},
+                        {"data": "skills"},
+                        {
+                            "data": {
+                                _: "rating.display",
+                                sort: "rating.display"
+                            }
+                        }
+                    ]
+                });
+
+
+
+
+
     });
 </script>
 </body>

@@ -65,12 +65,12 @@ foreach ($arrJobs->jobs as $i => $job) {
         try {
             $specific = $profile->getSpecific($job->id);
             $info = $specific->profile;
-            $upwork->created_at = date('Y-m-d H:i:s', $info->op_ctime / 1000);
+            $upwork->created_at = $info->op_ctime / 1000;
             $upwork->contractor_tier = $info->op_contractor_tier;
         } catch (OAuthException2 $e) {
             $logger->addInfo($e->getMessage());
             if (preg_match('#Profile.+is disabled#', $e->getMessage()) === 1) {
-                $upwork->created_at = date('Y-m-d H:i:s', strtotime($job->date_created));
+                $upwork->created_at = strtotime($job->date_created);
                 $upwork->contractor_tier = 8;
             }
         }
