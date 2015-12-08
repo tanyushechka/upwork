@@ -5,14 +5,42 @@
     <title></title>
     <link href="https://cdn.datatables.net/1.10.10/css/jquery.dataTables.min.css" rel="stylesheet">
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.datatables.net/1.10.10/css/dataTables.bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.datatables.net/select/1.1.0/css/select.dataTables.min.css" rel="stylesheet">
+    <link href="http://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-rating/1.3.1/bootstrap-rating.min.css"
           rel="stylesheet">
 </head>
 <body>
+<div class="btn-group btn-group-sm pull-right" role="group" aria-label="First group">
+    <button type="button" class="btn btn-default" id="button-clear-filter">
+        <span class="glyphicon glyphicon-asterisk" aria-hidden="true">
+        </span>
+    </button>
+    <button type="button" class="btn btn-default">
+        <span class="glyphicon glyphicon-refresh" aria-hidden="true">
+        </span>
+    </button>
+    <button type="button" class="btn btn-default">
+        <span class="glyphicon glyphicon-star" aria-hidden="true">
+        </span>
+    </button>
+</div>
 <table id="upwork" class="display  compact" cellspacing="0" width="100%">
     <thead>
+    <tr>
+        <th>Id</th>
+        <th>Job Id</th>
+        <th>Url</th>
+        <th>Created_at</th>
+        <th>Title</th>
+        <th>Description</th>
+        <th>Type</th>
+        <th>Budget</th>
+        <th>Engagement</th>
+        <th>EngagementWeeks</th>
+        <th>ContractorTier</th>
+        <th>Skills</th>
+        <th>Rating</th>
+    </tr>
     <tr>
         <th>Id</th>
         <th>Job Id</th>
@@ -48,32 +76,26 @@
     </tfoot>
 </table>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
 <script src="https://cdn.datatables.net/1.10.10/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/1.10.10/js/dataTables.bootstrap.min.js"></script>
-<script src="https://cdn.datatables.net/select/1.1.0/js/dataTables.select.min.js"></script>
 <script src="/media/js/jquery.dataTables.columnFilter.js" type="text/javascript"></script>
-<!--<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-rating/1.3.1/bootstrap-rating.min.js"></script>-->
 <script src="/bootstrap_rating.js"></script>
 <script>
     $(function () {
+        $.datepicker.regional[""].dateFormat = 'dd-mm-yy';
+        $.datepicker.setDefaults($.datepicker.regional['']);
         $('#upwork')
-                .on('draw.dt', function () {
-                    bootstrapRating();
-                    $('.rating').on('change', function (event, value) {
-                        var ind = $(this).attr('id');
-                        var val = $(this).attr('value');
-                        $.post("/update_rating.php", {id: ind, rating: val});
-                    });
-                })
                 .dataTable({
                     "ajax": "/get_data.php",
-                    "columnDefs": [{
-                        "targets": 2,
-                        "data": "url",
-                        "render": function (data, type, full, meta) {
-                            return '<a href="' + data + '">' + data + '</a>';
-                        }
-                    },
+                    "columnDefs": [
+                        {"width": "2%", "targets": 0},
+                        {
+                            "targets": 2,
+                            "data": "url",
+                            "render": function (data, type, full, meta) {
+                                return '<a href="' + data + '" target="_blank">' + data + '</a>';
+                            }
+                        },
                         {
                             "targets": 5,
                             "data": "description",
@@ -88,7 +110,8 @@
                             "data": "rating",
                             "render": function (data, type, row, meta) {
                                 return type === 'display' ? '<input type="hidden" id="' + row.id + '" class="rating" ' +
-                                'value="' + data + '" data-show-caption="false" data-size="xs"/>' : data;
+                                'value="' + data + '" data-show-caption="false" data-size="xs" data-row="' +
+                                meta.row + '" data-col="' + meta.col + '"/>' : data;
                             }
                         }
                     ],
@@ -118,25 +141,47 @@
                         }
                     ]
                 }).columnFilter({
+                    sPlaceHolder: "head:before",
                     aoColumns: [
                         {type: "number"},
                         null,
                         null,
-                        {type: "text"},
+//                            null,
+                        {type: "date-range", sRangeFormat: "Between {from} and {to}"},
                         {type: "text"},
                         {type: "text"},
                         {type: "select", values: ['Fixed', 'Hourly']},
-                        {type: "number"},
+                        {type: "number-range"},
                         {type: "select", values: ['Full-time', 'Part-time', 'As needed']},
                         null,
                         {type: "select", values: [1, 2, 3, 8]},
                         {type: "text"},
                         {type: "select", values: [0, 1, 2, 3, 4, 5]}
                     ]
+                }).on('draw.dt', function () {
+                    bootstrapRating();
+                    $('.rating').on('change', function (event, value) {
+                        var ind = $(this).attr('id');
+                        var val = $(this).attr('value');
+                        var row = $(this).attr('data-row');
+                        var col = $(this).attr('data-col');
+                        $('#upwork').DataTable().cell(row, col).data(val).draw();
+//                        console.log('id: ' + ind + ' rating: ' + val);
+                        $.post("/update_rating.php", {id: ind, rating: val});
+                    });
                 });
+        $('#button-clear-filter').click(function () {
+            $('#upwork').DataTable().search('').columns().search('').draw();
+            $('.filter_column').find('input').val(function () {
+                return $(this).attr('value')
+            });
+            $('.filter_date_range').find('input').val('');
+            $('.filter_number_range').find('input').val('');
+        });
 
 
     });
 </script>
+
 </body>
 </html>
