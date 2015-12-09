@@ -6,9 +6,7 @@
     <link href="https://cdn.datatables.net/1.10.10/css/jquery.dataTables.min.css" rel="stylesheet">
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
     <link href="http://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css" rel="stylesheet">
-    <!--<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-rating/1.3.1/bootstrap-rating.min.css"-->
-          <!--rel="stylesheet">-->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
 
 </head>
 <body>
@@ -78,12 +76,16 @@
     </tfoot>
 </table>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+<script src="http://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
 <script src="https://cdn.datatables.net/1.10.10/js/jquery.dataTables.min.js"></script>
-<script src="/media/js/jquery.dataTables.columnFilter.js" type="text/javascript"></script>
-<!--<script src="/bootstrap_rating.js"></script>-->
+<script src="/jquery.dataTables.columnFilter.js"></script>
 <script src="rater.min.js" charset="utf-8"></script>
 <script>
+    options = {
+        ajax_method: 'GET',
+        url: '/update_rating.php',
+        additional_data: {}
+    };
     $(function () {
         $.datepicker.regional[""].dateFormat = 'dd-mm-yy';
         $.datepicker.setDefaults($.datepicker.regional['']);
@@ -112,12 +114,9 @@
                             "targets": 12,
                             "data": "rating",
                             "render": function (data, type, row, meta) {
-//                                return type === 'display' ? '<input type="hidden" id="' + row.id + '" class="rating" ' +
-//                                'value="' + data + '" data-show-caption="false" data-size="xs" data-row="' +
-//                                meta.row + '" data-col="' + meta.col + '"/>' : data;
                                 return type === 'display' ?
-                                '<div class="rate" data-rate-value="'+data+'" data-row="' +
-                                meta.row + '" data-col="'+ meta.col + '" data-id="' + row.id+ '">' : data;
+                                '<div class="rate" id="' + row.id + '" data-rate-value="' + data + '" data-row="' +
+                                meta.row + '" data-col="' + meta.col + '" data-id="' + row.id + '">' : data;
                             }
                         }
                     ],
@@ -152,7 +151,6 @@
                         {type: "number"},
                         null,
                         null,
-//                            null,
                         {type: "date-range", sRangeFormat: "Between {from} and {to}"},
                         {type: "text"},
                         {type: "text"},
@@ -165,30 +163,17 @@
                         {type: "select", values: [0, 1, 2, 3, 4, 5]}
                     ]
                 }).on('draw.dt', function () {
-//                    bootstrapRating();
-                    $(".rate").rate();
-                    $(".rate").on("change", function(ev, data){
-//                        console.log(data.from, data.to);
-//                        var val = $(this).attr('value');
-                        var id = $(this).attr('data-id');
+                    $(".rate").rate(options);
+                    $(".rate").on("change", function (ev, data) {
                         var row = $(this).attr('data-row');
                         var col = $(this).attr('data-col');
-                        $('#upwork').DataTable().cell(row, col).data(data.to).draw();
-//
+                        options.additional_data.id = $(ev.target).attr('id');
+                        options.additional_data.rating = data.to;
+                        $('#upwork').DataTable().cell(row, col).data(data.to).draw(false);
                     });
-                    $(".rate").on("afterChange", function(ev, data){
-                        console.log(data.from, data.to);
-                    });
-//                    $('.rating').on('change', function (event, value) {
-//                        var ind = $(this).attr('id');
-//                        var val = $(this).attr('value');
-//                        var row = $(this).attr('data-row');
-//                        var col = $(this).attr('data-col');
-//                        $('#upwork').DataTable().cell(row, col).data(val).draw();
-////                        console.log('id: ' + ind + ' rating: ' + val);
-//                        $.post("/update_rating.php", {id: ind, rating: val});
-//                    });
+
                 });
+
         $('#button-clear-filter').click(function () {
             $('#upwork').DataTable().search('').columns().search('').draw();
             $('.filter_column').find('input').val(function () {
