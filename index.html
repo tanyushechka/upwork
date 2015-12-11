@@ -15,12 +15,12 @@
         <span class="glyphicon glyphicon-asterisk" aria-hidden="true">
         </span>
     </button>
-    <button type="button" class="btn btn-default">
+    <button type="button" class="btn btn-default" id="button-refresh">
         <span class="glyphicon glyphicon-refresh" aria-hidden="true">
         </span>
     </button>
     <button type="button" class="btn btn-default">
-        <span class="glyphicon glyphicon-star" aria-hidden="true">
+        <span class="glyphicon glyphicon-search" aria-hidden="true" id="button-search">
         </span>
     </button>
 </div>
@@ -151,11 +151,11 @@
                         {type: "number"},
                         null,
                         null,
-                        {type: "date-range", sRangeFormat: "Between {from} and {to}"},
+                        {type: "date-range", sRangeFormat: "Created between {from} and {to}"},
                         {type: "text"},
                         {type: "text"},
                         {type: "select", values: ['Fixed', 'Hourly']},
-                        {type: "number-range"},
+                        {type: "number-range", sRangeFormat: "Budget from {from} to {to}"},
                         {type: "select", values: ['Full-time', 'Part-time', 'As needed']},
                         null,
                         {type: "select", values: [1, 2, 3, 8]},
@@ -169,7 +169,7 @@
                         var col = $(this).attr('data-col');
                         options.additional_data.id = $(ev.target).attr('id');
                         options.additional_data.rating = data.to;
-                        $('#upwork').DataTable().cell(row, col).data(data.to).draw(false);
+                        $('#upwork').DataTable().cell(row, col).data(data.to).draw('page');
                     });
 
                 });
@@ -179,8 +179,21 @@
             $('.filter_column').find('input').val(function () {
                 return $(this).attr('value')
             });
+            $('.select_filter').find('.search_init').attr('selected', true);
+
             $('.filter_date_range').find('input').val('').click();
             $('.filter_number_range').find('input').val('').click();
+            $('#upwork').DataTable().order( [ 0, 'asc' ] ).draw();
+        });
+
+        $('#button-refresh').click(function () {
+//            $('#upwork').DataTable().search('').columns().search('').draw();
+//            $('.filter_column').find('input').val(function () {
+//                return $(this).attr('value')
+//            });
+//            $('.filter_date_range').find('input').val('').click();
+//            $('.filter_number_range').find('input').val('').click();
+
         });
 
 
