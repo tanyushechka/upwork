@@ -84,6 +84,7 @@
     var options = {
         ajax_method: 'GET',
         url: '/update_rating.php',
+        step_size: 1,
         additional_data: {}
     };
 
@@ -140,12 +141,7 @@
                         {"data": "engagement_weeks"},
                         {"data": "contractor_tier"},
                         {"data": "skills"},
-                        {
-                            "data": {
-                                _: "rating.display",
-                                sort: "rating.display"
-                            }
-                        }
+                        {"data": "rating"}
                     ]
                 }).columnFilter({
                     sPlaceHolder: "head:before",
