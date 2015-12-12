@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title></title>
     <link href="https://cdn.datatables.net/1.10.10/css/jquery.dataTables.min.css" rel="stylesheet">
+    <link href="https://cdn.datatables.net/buttons/1.1.0/css/buttons.dataTables.min.css" rel="stylesheet">
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
     <link href="http://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css" rel="stylesheet">
     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
@@ -37,7 +38,7 @@
         <th>Budget</th>
         <th>Engagement</th>
         <th>EngagementWeeks</th>
-        <th>ContractorTier</th>
+        <th>Contractor Tier</th>
         <th>Skills</th>
         <th>Rating</th>
     </tr>
@@ -52,7 +53,7 @@
         <th>Budget</th>
         <th>Engagement</th>
         <th>EngagementWeeks</th>
-        <th>ContractorTier</th>
+        <th>Contractor Tier</th>
         <th>Skills</th>
         <th>Rating</th>
     </tr>
@@ -69,7 +70,7 @@
         <th>Budget</th>
         <th>Engagement</th>
         <th>EngagementWeeks</th>
-        <th>ContractorTier</th>
+        <th>Contractor Tier</th>
         <th>Skills</th>
         <th>Rating</th>
     </tr>
@@ -78,8 +79,10 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 <script src="http://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
 <script src="https://cdn.datatables.net/1.10.10/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.1.0/js/dataTables.buttons.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.1.0/js/buttons.colVis.min.js"></script>
 <script src="/jquery.dataTables.columnFilter.js"></script>
-<script src="rater.min.js" charset="utf-8"></script>
+<script src="/rater.min.js" charset="utf-8"></script>
 <script>
     var options = {
         ajax_method: 'GET',
@@ -95,38 +98,21 @@
         var prev_rating = undefined;
         $('#upwork')
                 .dataTable({
+                    "order": [0, 'desc'],
                     "ajax": "/get_data.php",
-                    "columnDefs": [
-                        {"width": "2%", "targets": 0},
+                    dom: 'Bfrtip',
+                    buttons: [
+                        'colvis'
+                    ],
+                    "columns": [
+                        {"data": "id"},
+                        {"data": "job_id"},
                         {
-                            "targets": 2,
                             "data": "url",
                             "render": function (data, type, full, meta) {
                                 return '<a href="' + data + '" target="_blank">' + data + '</a>';
                             }
                         },
-                        {
-                            "targets": 5,
-                            "data": "description",
-                            "render": function (data, type, full, meta) {
-                                return type === 'display' && data.length > 40 ?
-                                '<span title="' + data + '">' + data.substr(0, 38) + '...</span>' : data;
-                            }
-                        },
-                        {
-                            "targets": 12,
-                            "data": "rating",
-                            "render": function (data, type, row, meta) {
-                                return type === 'display' ?
-                                '<div class="rate" style="font-size: 24px;" id="' + row.id + '" data-rate-value="' + data + '" data-row="' +
-                                meta.row + '" data-col="' + meta.col + '" data-id="' + row.id + '">' : data;
-                            }
-                        }
-                    ],
-                    "columns": [
-                        {"data": "id"},
-                        {"data": "job_id"},
-                        {"data": "url"},
                         {
                             "data": {
                                 _: "created_at.display",
@@ -134,14 +120,25 @@
                             }
                         },
                         {"data": "title"},
-                        {"data": "description", "width": "100px"},
+                        {"data": "description",
+                            "render": function (data, type, full, meta) {
+                                return type === 'display' && data.length > 100 ?
+                                '<span title="' + data + '">' + data.substr(0, 98) + '...</span>' : data;
+                            }},
                         {"data": "type"},
                         {"data": "budget"},
                         {"data": "engagement"},
                         {"data": "engagement_weeks"},
                         {"data": "contractor_tier"},
                         {"data": "skills"},
-                        {"data": "rating"}
+                        {
+                            "data": "rating",
+                            "render": function (data, type, row, meta) {
+                                return type === 'display' ?
+                                '<div class="rate" style="font-size: 24px;" id="' + row.id + '" data-rate-value="' + data + '" data-row="' +
+                                meta.row + '" data-col="' + meta.col + '" data-id="' + row.id + '">' : data;
+                            }
+                        }
                     ]
                 }).columnFilter({
                     sPlaceHolder: "head:before",
@@ -184,7 +181,7 @@
             $('.filter_date_range').find('input').val('').click();
             $('.filter_number_range').find('input').val('').click();
             $('#upwork').DataTable().search('').columns().search('');
-            $('#upwork').DataTable().order([0, 'asc']).draw();
+            $('#upwork').DataTable().order([0, 'desc']).draw();
         });
 
         $('#button-refresh').click(function () {
