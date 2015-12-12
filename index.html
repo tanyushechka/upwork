@@ -8,27 +8,16 @@
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
     <link href="http://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css" rel="stylesheet">
     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="https://cdn.datatables.net/responsive/2.0.0/css/responsive.dataTables.min.css" rel="stylesheet">
 
 </head>
 <body>
-<div class="btn-group btn-group-sm pull-right" role="group" aria-label="First group">
-    <button type="button" class="btn btn-default" id="button-clear-filter">
-        <span class="glyphicon glyphicon-asterisk" aria-hidden="true">
-        </span>
-    </button>
-    <button type="button" class="btn btn-default" id="button-refresh">
-        <span class="glyphicon glyphicon-refresh" aria-hidden="true">
-        </span>
-    </button>
-    <button type="button" class="btn btn-default">
-        <span class="glyphicon glyphicon-search" aria-hidden="true" id="button-search">
-        </span>
-    </button>
-</div>
+
 <table id="upwork" class="display  compact" cellspacing="0" width="100%">
     <thead>
     <tr>
         <th>Id</th>
+        <th>Rating</th>
         <th>Job Id</th>
         <th>Url</th>
         <th>Created_at</th>
@@ -40,27 +29,27 @@
         <th>EngagementWeeks</th>
         <th>Contractor Tier</th>
         <th>Skills</th>
-        <th>Rating</th>
     </tr>
-    <tr>
-        <th>Id</th>
-        <th>Job Id</th>
-        <th>Url</th>
-        <th>Created_at</th>
-        <th>Title</th>
-        <th>Description</th>
-        <th>Type</th>
-        <th>Budget</th>
-        <th>Engagement</th>
-        <th>EngagementWeeks</th>
-        <th>Contractor Tier</th>
-        <th>Skills</th>
-        <th>Rating</th>
-    </tr>
+    <!--<tr>-->
+    <!--<th>Id</th>-->
+    <!--<th>Job Id</th>-->
+    <!--<th>Url</th>-->
+    <!--<th>Created_at</th>-->
+    <!--<th>Title</th>-->
+    <!--<th>Description</th>-->
+    <!--<th>Type</th>-->
+    <!--<th>Budget</th>-->
+    <!--<th>Engagement</th>-->
+    <!--<th>EngagementWeeks</th>-->
+    <!--<th>Contractor Tier</th>-->
+    <!--<th>Skills</th>-->
+    <!--<th>Rating</th>-->
+    <!--</tr>-->
     </thead>
     <tfoot>
     <tr>
         <th>id</th>
+        <th>Rating</th>
         <th>job_id</th>
         <th>Url</th>
         <th>Created_at</th>
@@ -72,7 +61,6 @@
         <th>EngagementWeeks</th>
         <th>Contractor Tier</th>
         <th>Skills</th>
-        <th>Rating</th>
     </tr>
     </tfoot>
 </table>
@@ -81,6 +69,11 @@
 <script src="https://cdn.datatables.net/1.10.10/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/buttons/1.1.0/js/dataTables.buttons.min.js"></script>
 <script src="https://cdn.datatables.net/buttons/1.1.0/js/buttons.colVis.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.1.0/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.1.0/js/buttons.print.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.1.0/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.1.0/js/buttons.flash.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.0.0/js/dataTables.responsive.min.js"></script>
 <script src="/jquery.dataTables.columnFilter.js"></script>
 <script src="/rater.min.js" charset="utf-8"></script>
 <script>
@@ -100,50 +93,135 @@
                 .dataTable({
                     "order": [0, 'desc'],
                     "ajax": "/get_data.php",
+                    responsive: true,
+//                    columnDefs: [ {
+//                        className: 'control',
+//                        orderable: false,
+//                        targets:   0
+//                    } ],
                     dom: 'Bfrtip',
                     buttons: [
-                        'colvis'
+                        {
+                            extend: 'copy',
+                            text: '<b><u>C</u></b>opy',
+                            key: {
+                                key: 'c',
+                                ctrlKey: true
+                            }
+                        },
+                        'csv',
+                        'excel',
+                        'pdf',
+                        {
+                            extend: 'print',
+                            text: '<b><u>P</u></b>rint',
+                            key: {
+                                key: 'p',
+                                ctrlKey: true
+                            }
+                        },
+                        {
+                            extend: 'colvis',
+                            text: '<span class="glyphicon glyphicon-filter" aria-hidden="true">'
+                        },
+                        {
+                            text: '<span class="glyphicon glyphicon-asterisk" aria-hidden="true">',
+                            action: function () {
+                                $('.filter_column').find('input').val(function () {
+                                    return $(this).attr('value')
+                                });
+                                $('.select_filter').find('.search_init').attr('selected', true);
+                                $('.filter_date_range').find('input').val('').click();
+                                $('.filter_number_range').find('input').val('').click();
+                                $('#upwork').DataTable().search('').columns().search('');
+                                $('#upwork').DataTable().order([0, 'desc']).draw();
+                            }
+                        },
+                        {
+                            text: '<span class="glyphicon glyphicon-refresh" aria-hidden="true">',
+                            action: function () {
+
+                            }
+                        },
+                        {
+                            text: '<span class="glyphicon glyphicon-download-alt" aria-hidden="true">',
+                            action: function () {
+
+                            }
+                        }
                     ],
                     "columns": [
-                        {"data": "id"},
-                        {"data": "job_id"},
                         {
-                            "data": "url",
-                            "render": function (data, type, full, meta) {
-                                return '<a href="' + data + '" target="_blank">' + data + '</a>';
-                            }
+                            "data": "id",
+                            responsivePriority: 1
                         },
-                        {
-                            "data": {
-                                _: "created_at.display",
-                                sort: "created_at.timestamp"
-                            }
-                        },
-                        {"data": "title"},
-                        {"data": "description",
-                            "render": function (data, type, full, meta) {
-                                return type === 'display' && data.length > 100 ?
-                                '<span title="' + data + '">' + data.substr(0, 98) + '...</span>' : data;
-                            }},
-                        {"data": "type"},
-                        {"data": "budget"},
-                        {"data": "engagement"},
-                        {"data": "engagement_weeks"},
-                        {"data": "contractor_tier"},
-                        {"data": "skills"},
                         {
                             "data": "rating",
                             "render": function (data, type, row, meta) {
                                 return type === 'display' ?
                                 '<div class="rate" style="font-size: 24px;" id="' + row.id + '" data-rate-value="' + data + '" data-row="' +
                                 meta.row + '" data-col="' + meta.col + '" data-id="' + row.id + '">' : data;
-                            }
+                            },
+                            responsivePriority: 2
+                        },
+                        {"data": "job_id", responsivePriority: 12},
+                        {
+                            "data": "url",
+                            "render": function (data, type, full, meta) {
+                                return '<a href="' + data + '" target="_blank">' + data + '</a>';
+                            },
+                            responsivePriority: 11
+                        },
+                        {
+                            "data": {
+                                _: "created_at.display",
+                                sort: "created_at.timestamp"
+                            },
+                            responsivePriority: 3
+                        },
+                        {
+                            "data": "title",
+                            responsivePriority: 4
+                        },
+                        {
+                            "data": "description",
+                            "render": function (data, type, full, meta) {
+                                return type === 'display' && data.length > 100 ?
+                                '<span title="' + data + '">' + data.substr(0, 98) + '...</span>' : data;
+                            },
+                            responsivePriority: 13
+                        },
+                        {
+                            "data": "type",
+                            responsivePriority: 5
+                        },
+                        {
+                            "data": "budget",
+                            responsivePriority: 6
+                        },
+                        {
+                            "data": "engagement",
+                            responsivePriority: 7
+                        },
+                        {
+                            "data": "engagement_weeks",
+                            responsivePriority: 8
+                        },
+                        {
+                            "data": "contractor_tier",
+                            responsivePriority: 9
+                        },
+                        {
+                            "data": "skills",
+                            responsivePriority: 10
                         }
                     ]
                 }).columnFilter({
                     sPlaceHolder: "head:before",
                     aoColumns: [
-                        {type: "number"},
+//                        {type: "number"},
+                        null,
+                        {type: "select", values: [0, 1, 2, 3, 4, 5]},
                         null,
                         null,
                         {type: "date-range", sRangeFormat: "Created between {from} and {to}"},
@@ -154,8 +232,7 @@
                         {type: "select", values: ['Full-time', 'Part-time', 'As needed']},
                         null,
                         {type: "select", values: [1, 2, 3, 8]},
-                        {type: "text"},
-                        {type: "select", values: [0, 1, 2, 3, 4, 5]}
+                        {type: "text"}
                     ]
                 }).on('draw.dt', function () {
                     $(".rate").rate(options);
@@ -172,28 +249,6 @@
                     });
 
                 });
-
-        $('#button-clear-filter').click(function () {
-            $('.filter_column').find('input').val(function () {
-                return $(this).attr('value')
-            });
-            $('.select_filter').find('.search_init').attr('selected', true);
-            $('.filter_date_range').find('input').val('').click();
-            $('.filter_number_range').find('input').val('').click();
-            $('#upwork').DataTable().search('').columns().search('');
-            $('#upwork').DataTable().order([0, 'desc']).draw();
-        });
-
-        $('#button-refresh').click(function () {
-//            $('#upwork').DataTable().search('').columns().search('').draw();
-//            $('.filter_column').find('input').val(function () {
-//                return $(this).attr('value')
-//            });
-//            $('.filter_date_range').find('input').val('').click();
-//            $('.filter_number_range').find('input').val('').click();
-
-        });
-
 
     });
 </script>
