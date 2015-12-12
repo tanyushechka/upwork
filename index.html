@@ -81,14 +81,17 @@
 <script src="/jquery.dataTables.columnFilter.js"></script>
 <script src="rater.min.js" charset="utf-8"></script>
 <script>
-    options = {
+    var options = {
         ajax_method: 'GET',
         url: '/update_rating.php',
         additional_data: {}
     };
+
     $(function () {
         $.datepicker.regional[""].dateFormat = 'dd-mm-yy';
         $.datepicker.setDefaults($.datepicker.regional['']);
+        var prev_rowid = undefined;
+        var prev_rating = undefined;
         $('#upwork')
                 .dataTable({
                     "ajax": "/get_data.php",
@@ -104,11 +107,9 @@
                         {
                             "targets": 5,
                             "data": "description",
-
                             "render": function (data, type, full, meta) {
                                 return type === 'display' && data.length > 40 ?
-                                '<span title="' + data + '">' + data.substr(0, 38) + '...</span>' :
-                                        data;
+                                '<span title="' + data + '">' + data.substr(0, 38) + '...</span>' : data;
                             }
                         },
                         {
@@ -166,25 +167,28 @@
                 }).on('draw.dt', function () {
                     $(".rate").rate(options);
                     $(".rate").on("change", function (ev, data) {
-                        var row = $(this).attr('data-row');
-                        var col = $(this).attr('data-col');
-                        options.additional_data.id = $(ev.target).attr('id');
-                        options.additional_data.rating = data.to;
-                        $('#upwork').DataTable().cell(row, col).data(data.to).draw('page');
+                        var rowid = $(ev.target).attr('id');
+                        var rating = data.to;
+                        if (prev_rowid != rowid || prev_rating != rating) {
+                            var row = $(this).attr('data-row');
+                            var col = $(this).attr('data-col');
+                            prev_rowid = options.additional_data.id = rowid;
+                            prev_rating = options.additional_data.rating = rating;
+                            $('#upwork').DataTable().cell(row, col).data(rating).draw('page');
+                        }
                     });
 
                 });
 
         $('#button-clear-filter').click(function () {
-            $('#upwork').DataTable().search('').columns().search('').draw();
             $('.filter_column').find('input').val(function () {
                 return $(this).attr('value')
             });
             $('.select_filter').find('.search_init').attr('selected', true);
-
             $('.filter_date_range').find('input').val('').click();
             $('.filter_number_range').find('input').val('').click();
-            $('#upwork').DataTable().order( [ 0, 'asc' ] ).draw();
+            $('#upwork').DataTable().search('').columns().search('');
+            $('#upwork').DataTable().order([0, 'asc']).draw();
         });
 
         $('#button-refresh').click(function () {
