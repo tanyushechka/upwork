@@ -9,8 +9,6 @@
     <link href="http://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css" rel="stylesheet">
     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
     <link href="https://cdn.datatables.net/responsive/2.0.0/css/responsive.dataTables.min.css" rel="stylesheet">
-    <link href="https://cdn.datatables.net/colreorder/1.3.0/css/colReorder.dataTables.min.css" rel="stylesheet">
-
 </head>
 <body>
 
@@ -21,7 +19,6 @@
         <th>Rating</th>
         <th>Created_at</th>
         <th>Title</th>
-        <th>Description</th>
         <th>Type</th>
         <th>Budget</th>
         <th>Engagement</th>
@@ -29,23 +26,9 @@
         <th>Contractor Tier</th>
         <th>Url</th>
         <th>Job Id</th>
+        <th>Description</th>
         <th>Skills</th>
     </tr>
-    <!--<tr>-->
-    <!--<th>Id</th>-->
-    <!--<th>Job Id</th>-->
-    <!--<th>Url</th>-->
-    <!--<th>Created_at</th>-->
-    <!--<th>Title</th>-->
-    <!--<th>Description</th>-->
-    <!--<th>Type</th>-->
-    <!--<th>Budget</th>-->
-    <!--<th>Engagement</th>-->
-    <!--<th>EngagementWeeks</th>-->
-    <!--<th>Contractor Tier</th>-->
-    <!--<th>Skills</th>-->
-    <!--<th>Rating</th>-->
-    <!--</tr>-->
     </thead>
     <tfoot>
     <tr>
@@ -53,7 +36,6 @@
         <th>Rating</th>
         <th>Created_at</th>
         <th>Title</th>
-        <th>Description</th>
         <th>Type</th>
         <th>Budget</th>
         <th>Engagement</th>
@@ -61,6 +43,7 @@
         <th>Contractor Tier</th>
         <th>Url</th>
         <th>Job_id</th>
+        <th>Description</th>
         <th>Skills</th>
     </tr>
     </tfoot>
@@ -75,7 +58,6 @@
 <script src="https://cdn.datatables.net/buttons/1.1.0/js/buttons.html5.min.js"></script>
 <script src="https://cdn.datatables.net/buttons/1.1.0/js/buttons.flash.min.js"></script>
 <script src="https://cdn.datatables.net/responsive/2.0.0/js/dataTables.responsive.min.js"></script>
-<script src="https://cdn.datatables.net/colreorder/1.3.0/js/dataTables.colReorder.min.js"></script>
 <script src="/jquery.dataTables.columnFilter.js"></script>
 <script src="/rater.min.js" charset="utf-8"></script>
 <script>
@@ -96,7 +78,6 @@
                     "order": [0, 'desc'],
                     "ajax": "/get_data.php",
                     responsive: true,
-                    colReorder: true,
                     dom: 'Bfrtip',
                     buttons: [
                         {
@@ -144,7 +125,6 @@
                         {
                             text: '<span class="glyphicon glyphicon-download-alt" aria-hidden="true">',
                             action: function () {
-
                             }
                         }
                     ],
@@ -171,15 +151,11 @@
                         },
                         {
                             "data": "title",
-                            responsivePriority: 4
-                        },
-                        {
-                            "data": "description",
                             "render": function (data, type, full, meta) {
                                 return type === 'display' && data.length > 100 ?
                                 '<span title="' + data + '">' + data.substr(0, 98) + '...</span>' : data;
                             },
-                            responsivePriority: 13
+                            responsivePriority: 4
                         },
                         {
                             "data": "type",
@@ -206,25 +182,32 @@
                             "render": function (data, type, full, meta) {
                                 return '<a href="' + data + '" target="_blank">' + data + '</a>';
                             },
-                            responsivePriority: 11
+                            responsivePriority: 10
                         },
                         {
                             "data": "job_id",
-                            responsivePriority: 12
+                            responsivePriority: 11
                         },
                         {
+                            "data": "description",
+//                            "render": function (data, type, full, meta) {
+//                                return type === 'display' && data.length > 100 ?
+//                                '<span title="' + data + '">' + data.substr(0, 98) + '...</span>' : data;
+//                            },
+                            responsivePriority: 12
+                        },
+
+                        {
                             "data": "skills",
-                            responsivePriority: 10
+                            responsivePriority: 13
                         }
                     ]
                 }).columnFilter({
 //                    sPlaceHolder: "head:before",
                     aoColumns: [
-//                        {type: "number"},
                         null,
                         {type: "select", values: [0, 1, 2, 3, 4, 5]},
                         {type: "date-range", sRangeFormat: "Created between {from} and {to}"},
-                        {type: "text"},
                         {type: "text"},
                         {type: "select", values: ['Fixed', 'Hourly']},
                         {type: "number-range", sRangeFormat: "Budget from {from} to {to}"},
@@ -233,27 +216,10 @@
                         {type: "select", values: [1, 2, 3, 8]},
                         null,
                         null,
+                        {type: "text"},
                         {type: "text"}
                     ]
                 }).on('draw.dt', function () {
-                    console.log('qq');
-//                    $('#upwork').DataTable().colReorder.transpose([0,1,2,3,4,5,6,7,8,9,10,11,12]);
-                    $('#upwork').DataTable().on('column-reorder', function (e, settings, details) {
-
-                        console.log('zz');
-                        $(".rate").rate(options);
-                        $(".rate").on("change", function (ev, data) {
-                            var rowid = $(ev.target).attr('id');
-                            var rating = data.to;
-                            if (prev_rowid != rowid || prev_rating != rating) {
-                                var row = $(this).attr('data-row');
-                                var col = $(this).attr('data-col');
-                                prev_rowid = options.additional_data.id = rowid;
-                                prev_rating = options.additional_data.rating = rating;
-                                $('#upwork').DataTable().cell(row, col).data(rating).draw('page');
-                            }
-                        });
-                    });
                     $(".rate").rate(options);
                     $(".rate").on("change", function (ev, data) {
                         var rowid = $(ev.target).attr('id');
@@ -266,7 +232,6 @@
                             $('#upwork').DataTable().cell(row, col).data(rating).draw('page');
                         }
                     });
-
                 });
     });
 </script>
