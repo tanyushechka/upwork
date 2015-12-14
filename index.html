@@ -7,6 +7,7 @@
     <link href="https://cdn.datatables.net/buttons/1.1.0/css/buttons.dataTables.min.css" rel="stylesheet">
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
     <link href="http://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css" rel="stylesheet">
+    <link href="https://cdn.datatables.net/1.10.10/css/dataTables.jqueryui.min.css" rel="stylesheet">
     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
     <link href="https://cdn.datatables.net/responsive/2.0.0/css/responsive.dataTables.min.css" rel="stylesheet">
 </head>
@@ -51,6 +52,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 <script src="http://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
 <script src="https://cdn.datatables.net/1.10.10/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.10/js/dataTables.jqueryui.min.js"></script>
 <script src="https://cdn.datatables.net/buttons/1.1.0/js/dataTables.buttons.min.js"></script>
 <script src="https://cdn.datatables.net/buttons/1.1.0/js/buttons.colVis.min.js"></script>
 <script src="https://cdn.datatables.net/buttons/1.1.0/js/buttons.html5.min.js"></script>
@@ -59,6 +61,7 @@
 <script src="https://cdn.datatables.net/buttons/1.1.0/js/buttons.flash.min.js"></script>
 <script src="https://cdn.datatables.net/responsive/2.0.0/js/dataTables.responsive.min.js"></script>
 <script src="/jquery.dataTables.columnFilter.js"></script>
+<script src="/datepicker-ru.js"></script>
 <script src="/rater.min.js" charset="utf-8"></script>
 <script>
     var options = {
@@ -69,15 +72,21 @@
     };
 
     $(function () {
-        $.datepicker.regional[""].dateFormat = 'dd-mm-yy';
-        $.datepicker.setDefaults($.datepicker.regional['']);
+        $.datepicker.regional[''].dateFormat = 'dd-mm-yy';
+//        $.datepicker.setDefaults($.datepicker.regional['']);
+        $.datepicker.setDefaults({
+            minDate: "-77d",
+            maxDate: "-17d"
+        });
+//        $.datepicker({ minDate: -20, maxDate: "+1M +10D" });
         var prev_rowid = undefined;
         var prev_rating = undefined;
         $('#upwork')
                 .dataTable({
-                    "order": [0, 'desc'],
-                    "ajax": "/get_data.php",
+                    order: [0, 'desc'],
+                    ajax: '/get_data.php',
                     responsive: true,
+                    jQueryUI: true,
                     dom: 'Bfrtip',
                     buttons: [
                         {
@@ -203,7 +212,7 @@
                         }
                     ]
                 }).columnFilter({
-//                    sPlaceHolder: "head:before",
+                    sPlaceHolder: "head:before",
                     aoColumns: [
                         null,
                         {type: "select", values: [0, 1, 2, 3, 4, 5]},
