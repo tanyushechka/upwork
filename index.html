@@ -73,17 +73,16 @@
 
     $(function () {
         $.datepicker.regional[''].dateFormat = 'dd-mm-yy';
-//        $.datepicker.setDefaults($.datepicker.regional['']);
         $.datepicker.setDefaults({
-            minDate: "-77d",
-            maxDate: "-17d"
+            minDate: "-2d",
+            maxDate: "+1d"
         });
-//        $.datepicker({ minDate: -20, maxDate: "+1M +10D" });
+
         var prev_rowid = undefined;
         var prev_rating = undefined;
         $('#upwork')
                 .dataTable({
-                    order: [0, 'desc'],
+                    order: [2, 'desc'],
                     ajax: '/get_data.php',
                     responsive: true,
                     jQueryUI: true,
@@ -122,25 +121,26 @@
                                 $('.filter_date_range').find('input').val('').click();
                                 $('.filter_number_range').find('input').val('').click();
                                 $('#upwork').DataTable().search('').columns().search('');
-                                $('#upwork').DataTable().order([0, 'desc']).draw();
+                                $('#upwork').DataTable().order([2, 'desc']).draw();
                             }
                         },
                         {
                             text: '<span class="glyphicon glyphicon-refresh" aria-hidden="true">',
                             action: function () {
-
+                                $('#upwork').DataTable().ajax.reload();
                             }
                         },
                         {
                             text: '<span class="glyphicon glyphicon-download-alt" aria-hidden="true">',
                             action: function () {
+                                $.get('/search.php');
+//                                $('#upwork').DataTable().ajax.reload();
                             }
                         }
                     ],
                     "columns": [
                         {
-                            "data": "id",
-                            responsivePriority: 1
+                            "data": "id"
                         },
                         {
                             "data": "rating",
@@ -148,67 +148,56 @@
                                 return type === 'display' ?
                                 '<div class="rate" style="font-size: 24px;" id="' + row.id + '" data-rate-value="' + data + '" data-row="' +
                                 meta.row + '" data-col="' + meta.col + '" data-id="' + row.id + '">' : data;
-                            },
-                            responsivePriority: 2
+                            }
                         },
                         {
                             "data": {
                                 _: "created_at.display",
                                 sort: "created_at.timestamp"
-                            },
-                            responsivePriority: 3
+                            }
                         },
                         {
                             "data": "title",
                             "render": function (data, type, full, meta) {
                                 return type === 'display' && data.length > 100 ?
                                 '<span title="' + data + '">' + data.substr(0, 98) + '...</span>' : data;
-                            },
-                            responsivePriority: 4
+                            }
                         },
                         {
-                            "data": "type",
-                            responsivePriority: 5
+                            "data": "type"
                         },
                         {
-                            "data": "budget",
-                            responsivePriority: 6
+                            "data": "budget"
                         },
                         {
-                            "data": "engagement",
-                            responsivePriority: 7
+                            "data": "engagement"
                         },
                         {
                             "data": "engagement_weeks",
                             responsivePriority: 8
                         },
                         {
-                            "data": "contractor_tier",
-                            responsivePriority: 9
+                            "data": "contractor_tier"
                         },
                         {
                             "data": "url",
                             "render": function (data, type, full, meta) {
                                 return '<a href="' + data + '" target="_blank">' + data + '</a>';
-                            },
-                            responsivePriority: 10
+                            }
                         },
                         {
-                            "data": "job_id",
-                            responsivePriority: 11
+                            "data": "job_id"
                         },
                         {
-                            "data": "description",
+                            "data": "description"
 //                            "render": function (data, type, full, meta) {
 //                                return type === 'display' && data.length > 100 ?
 //                                '<span title="' + data + '">' + data.substr(0, 98) + '...</span>' : data;
 //                            },
-                            responsivePriority: 12
                         },
 
                         {
-                            "data": "skills",
-                            responsivePriority: 13
+                            "data": "skills"
                         }
                     ]
                 }).columnFilter({

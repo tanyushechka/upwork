@@ -10,7 +10,7 @@ use App\Classes\Db;
 use App\Classes\Upwork;
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
-//use Monolog\Handler\BrowserConsoleHandler;
+use Monolog\Handler\BrowserConsoleHandler;
 use Monolog\Handler\PHPConsoleHandler;
 
 
@@ -21,11 +21,11 @@ $accessToken = '6cd6202680a20796889a537ae28bb51e';
 $accessSecret = '2d2c4ec57fd374c4';
 
 $stream = new StreamHandler(__DIR__ . '/exceptions.log', Logger::DEBUG);
-//$browser = new BrowserConsoleHandler(Logger::DEBUG, true);
+$browser = new BrowserConsoleHandler(Logger::DEBUG, true);
 $phpConsole = new PHPConsoleHandler();
 $logger = new Logger('rss_logger');
 $logger->pushHandler($stream);
-//$logger->pushHandler($browser);
+$logger->pushHandler($browser);
 $logger->pushHandler($phpConsole);
 
 $config = new Config(
@@ -46,7 +46,6 @@ $profile = new Profile($client);
 $jobs = new Search($client);
 $params = ['q' => '*', 'category2' => 'Web, Mobile & Software Dev', 'paging' => '0;100'];
 $arrJobs = $jobs->find($params);
-
 foreach ($arrJobs->jobs as $i => $job) {
     $res = Upwork::findOne($db, $job->id);
     if (!isset($res)) {
@@ -59,9 +58,10 @@ foreach ($arrJobs->jobs as $i => $job) {
         $upwork->description = $job->snippet;
         $upwork->type = $job->job_type;
         $upwork->budget = $job->budget === null ? 0 : $job->budget;
-        $upwork->engagement = $job->duration;
-        $upwork->engagement_weeks = $job->workload;
+        $upwork->engagement = $job->duration === null ? '' : $job->duration;
+        $upwork->engagement_weeks = $job->workload === null ? '' : $job->workload;
         $upwork->skills = implode(', ', $job->skills);
+        $upwork->rating = 0;
         try {
             $specific = $profile->getSpecific($job->id);
             $info = $specific->profile;
@@ -78,5 +78,3 @@ foreach ($arrJobs->jobs as $i => $job) {
     }
 }
 
-$result = Upwork::findAll($db);
-echo json_encode($result, JSON_UNESCAPED_UNICODE);

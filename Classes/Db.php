@@ -39,6 +39,8 @@ class Db
     {
         $sth = $this->dbh->prepare($sql);
         return $sth->execute($params);
+//        return $sth->errorInfo();
+
     }
 
 }
