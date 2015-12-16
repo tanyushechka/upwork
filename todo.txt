@@ -3,4 +3,4 @@ https://datatables.net/reference/option/responsive.details.renderer
 https://datatables.net/reference/option/responsive.details.display
 2. сделать множественную вставку
 3. сортировать полученный массив $arrJobs = $jobs->find($params); по дате до вставки в таблицу
-4. pdf, excel
+
