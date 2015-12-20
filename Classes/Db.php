@@ -11,6 +11,13 @@ class Db
         $this->dbh = new \PDO($dsn, $config->user, $config->password);
     }
 
+    function dbSelectAssoc($sql, $params = [])
+    {
+        $sth = $this->dbh->prepare($sql);
+        $sth->execute($params);
+        $res = ($sth->fetchAll(\PDO::FETCH_ASSOC));
+        return $res;
+    }
 
     function dbSelect($class, $sql, $params = [])
     {
@@ -25,6 +32,7 @@ class Db
         $sth = $this->dbh->prepare($sql);
         $sth->execute($params);
         $res = ($sth->fetchAll(\PDO::FETCH_OBJ));
+//        var_dump($sth->errorInfo());
         return $res;
     }
 
