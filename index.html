@@ -26,7 +26,6 @@
         <th>EngagementWeeks</th>
         <th>Contractor Tier</th>
         <th>Url</th>
-        <th>Job Id</th>
         <th>Description</th>
         <th>Skills</th>
     </tr>
@@ -43,7 +42,6 @@
         <th>EngagementWeeks</th>
         <th>Contractor Tier</th>
         <th>Url</th>
-        <th>Job_id</th>
         <th>Description</th>
         <th>Skills</th>
     </tr>
@@ -81,7 +79,26 @@
                 .dataTable({
                     order: [2, 'desc'],
                     ajax: '/get_data.php',
-                    responsive: true,
+                    responsive:
+{
+                        details: {
+                            display: $.fn.dataTable.Responsive.display.childRow,
+                            renderer: function ( api, rowIdx, columns ) {
+                                var data = $.map( columns, function ( col, i ) {
+                                    return col.hidden ?
+                                    '<tr>'+
+                                    '<td>'+col.title+':'+'</td> '+
+                                    '<td>'+col.data+'</td>'+
+                                    '</tr>' :
+                                            '';
+                                } ).join('');
+
+                                return data ?
+                                        $('<table>').append( data) :
+                                        false;
+                            }
+                        }
+                    },
                     jQueryUI: true,
                     dom: 'Bfrtip',
                     buttons: [
@@ -153,7 +170,11 @@
                             "data": "type"
                         },
                         {
-                            "data": "budget"
+                            "data": "budget",
+                            "render": function (data, type) {
+                                return type === 'display' && data > 1000 ?
+                                '<span style="color: red; font-weight: 700;">' + data + '</span>' : data;
+                            }
                         },
                         {
                             "data": "engagement"
@@ -172,16 +193,8 @@
                             }
                         },
                         {
-                            "data": "job_id"
-                        },
-                        {
                             "data": "description"
-//                            "render": function (data, type, full, meta) {
-//                                return type === 'display' && data.length > 100 ?
-//                                '<span title="' + data + '">' + data.substr(0, 98) + '...</span>' : data;
-//                            },
                         },
-
                         {
                             "data": "skills"
                         }
@@ -198,7 +211,6 @@
                         {type: "select", values: ['Full-time', 'Part-time', 'As needed']},
                         null,
                         {type: "select", values: [1, 2, 3, 8]},
-                        null,
                         null,
                         {type: "text"},
                         {type: "text"}
