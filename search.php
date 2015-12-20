@@ -46,13 +46,25 @@ $profile = new Profile($client);
 $jobs = new Search($client);
 $params = ['q' => '*', 'category2' => 'Web, Mobile & Software Dev', 'paging' => '0;100'];
 $arrJobs = $jobs->find($params);
+///////////
+$jobIdArr = [];
 foreach ($arrJobs->jobs as $i => $job) {
-    $res = Upwork::findOne($db, $job->id);
-    if (!isset($res)) {
+    $j = ':id' . $i;
+    $jobIdArr[$j] = $job->id;
+}
+$sql = 'SELECT `id` FROM `upwork` WHERE `id` IN (' . implode(', ', array_keys($jobIdArr)) . ')';
+$selectedIdArr = $db->dbSelectObj($sql, $jobIdArr);
+$idArr = array_map(function ($item) {
+    return $item->id;
+}, $selectedIdArr);
+$newIdArr = array_diff($jobIdArr, $idArr);
+//////////
+foreach ($arrJobs->jobs as $i => $job) {
+//    $res = Upwork::findOne($db, $job->id);
+//    if (!isset($res)) {
+    if (in_array($job->id, $newIdArr)) {
         $upwork = new Upwork();
-        $upwork->sample_id = ++$i;
-        $upwork->sample_date = date('Y-m-d H:i:s');
-        $upwork->job_id = $job->id;
+        $upwork->id = $job->id;
         $upwork->url = $job->url;
         $upwork->title = $job->title;
         $upwork->description = $job->snippet;
