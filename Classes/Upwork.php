@@ -4,9 +4,6 @@ namespace App\Classes;
 class Upwork
 {
     public $id;
-    public $sample_id;
-    public $sample_date;
-    public $job_id;
     public $url;
     public $created_at;
     public $title;
@@ -35,7 +32,6 @@ class Upwork
     public function insert($db)
     {
         $properties = get_object_vars($this);
-        unset($properties['id']);
         $columns = array_keys($properties);
         $places = [];
         $data = [];
