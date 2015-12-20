@@ -46,23 +46,10 @@ $profile = new Profile($client);
 $jobs = new Search($client);
 $params = ['q' => '*', 'category2' => 'Web, Mobile & Software Dev', 'paging' => '0;100'];
 $arrJobs = $jobs->find($params);
-///////////
-$jobIdArr = [];
+
 foreach ($arrJobs->jobs as $i => $job) {
-    $j = ':id' . $i;
-    $jobIdArr[$j] = $job->id;
-}
-$sql = 'SELECT `id` FROM `upwork` WHERE `id` IN (' . implode(', ', array_keys($jobIdArr)) . ')';
-$selectedIdArr = $db->dbSelectObj($sql, $jobIdArr);
-$idArr = array_map(function ($item) {
-    return $item->id;
-}, $selectedIdArr);
-$newIdArr = array_diff($jobIdArr, $idArr);
-//////////
-foreach ($arrJobs->jobs as $i => $job) {
-//    $res = Upwork::findOne($db, $job->id);
-//    if (!isset($res)) {
-    if (in_array($job->id, $newIdArr)) {
+     $res = Upwork::findOne($db, $job->id);
+      if (!isset($res)) {
         $upwork = new Upwork();
         $upwork->id = $job->id;
         $upwork->url = $job->url;
@@ -70,7 +57,6 @@ foreach ($arrJobs->jobs as $i => $job) {
         $upwork->description = $job->snippet;
         $upwork->type = $job->job_type;
         $upwork->budget = $job->budget === null ? 0 : $job->budget;
-        $upwork->engagement = $job->duration === null ? '' : $job->duration;
         $upwork->engagement_weeks = $job->workload === null ? '' : $job->workload;
         $upwork->skills = implode(', ', $job->skills);
         $upwork->rating = 0;
@@ -79,11 +65,13 @@ foreach ($arrJobs->jobs as $i => $job) {
             $info = $specific->profile;
             $upwork->created_at = $info->op_ctime / 1000;
             $upwork->contractor_tier = $info->op_contractor_tier;
+            $upwork->engagement = $info->op_engagement;
         } catch (OAuthException2 $e) {
             $logger->addInfo($e->getMessage());
             if (preg_match('#Profile.+is disabled#', $e->getMessage()) === 1) {
                 $upwork->created_at = strtotime($job->date_created);
-                $upwork->contractor_tier = 8;
+                $upwork->contractor_tier = -1;
+                $upwork->engagement = $job->duration === null ? '' : $job->duration;
             }
         }
         $upwork->insert($db);

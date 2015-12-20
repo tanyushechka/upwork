@@ -16,15 +16,15 @@
 <table id="upwork" class="display  compact" cellspacing="0" width="100%">
     <thead>
     <tr>
-        <th>Id</th>
-        <th>Rating</th>
         <th>Created_at</th>
+        <th>Rating</th>
         <th>Title</th>
+        <th>Contractor Tier</th>
         <th>Type</th>
         <th>Budget</th>
         <th>Engagement</th>
         <th>EngagementWeeks</th>
-        <th>Contractor Tier</th>
+        <th>Id</th>
         <th>Url</th>
         <th>Description</th>
         <th>Skills</th>
@@ -32,15 +32,15 @@
     </thead>
     <tfoot>
     <tr>
-        <th>id</th>
-        <th>Rating</th>
         <th>Created_at</th>
+        <th>Rating</th>
         <th>Title</th>
+        <th>Contractor Tier</th>
         <th>Type</th>
         <th>Budget</th>
         <th>Engagement</th>
         <th>EngagementWeeks</th>
-        <th>Contractor Tier</th>
+        <th>id</th>
         <th>Url</th>
         <th>Description</th>
         <th>Skills</th>
@@ -79,22 +79,21 @@
                 .dataTable({
                     order: [2, 'desc'],
                     ajax: '/get_data.php',
-                    responsive:
-{
+                    responsive: {
                         details: {
                             display: $.fn.dataTable.Responsive.display.childRow,
-                            renderer: function ( api, rowIdx, columns ) {
-                                var data = $.map( columns, function ( col, i ) {
+                            renderer: function (api, rowIdx, columns) {
+                                var data = $.map(columns, function (col, i) {
                                     return col.hidden ?
-                                    '<tr>'+
-                                    '<td>'+col.title+':'+'</td> '+
-                                    '<td>'+col.data+'</td>'+
+                                    '<tr>' +
+                                    '<td>' + col.title + ':' + '</td> ' +
+                                    '<td>' + col.data + '</td>' +
                                     '</tr>' :
                                             '';
-                                } ).join('');
+                                }).join('');
 
                                 return data ?
-                                        $('<table>').append( data) :
+                                        $('<table>').append(data) :
                                         false;
                             }
                         }
@@ -143,7 +142,10 @@
                     ],
                     "columns": [
                         {
-                            "data": "id"
+                            "data": {
+                                _: "created_at.display",
+                                sort: "created_at.timestamp"
+                            }
                         },
                         {
                             "data": "rating",
@@ -154,17 +156,14 @@
                             }
                         },
                         {
-                            "data": {
-                                _: "created_at.display",
-                                sort: "created_at.timestamp"
-                            }
-                        },
-                        {
                             "data": "title",
                             "render": function (data, type, full, meta) {
                                 return type === 'display' && data.length > 100 ?
                                 '<span title="' + data + '">' + data.substr(0, 98) + '...</span>' : data;
                             }
+                        },
+                        {
+                            "data": "contractor_tier"
                         },
                         {
                             "data": "type"
@@ -180,11 +179,11 @@
                             "data": "engagement"
                         },
                         {
-                            "data": "engagement_weeks",
-                            responsivePriority: 8
+                            "data": "engagement_weeks"
                         },
+
                         {
-                            "data": "contractor_tier"
+                            "data": "id"
                         },
                         {
                             "data": "url",
@@ -197,23 +196,23 @@
                         },
                         {
                             "data": "skills"
-                        }
+                            }
                     ]
                 }).columnFilter({
                     sPlaceHolder: "head:before",
                     aoColumns: [
-                        null,
-                        {type: "select", values: [0, 1, 2, 3, 4, 5]},
                         {type: "date-range", sRangeFormat: "Created between {from} and {to}"},
+                        {type: "select", values: [0, 1, 2, 3, 4, 5]},
                         {type: "text"},
+                        {type: "select", values: [-1, 0, 1, 2, 3, 5]},
                         {type: "select", values: ['Fixed', 'Hourly']},
                         {type: "number-range", sRangeFormat: "Budget from {from} to {to}"},
                         {type: "select", values: ['Full-time', 'Part-time', 'As needed']},
                         null,
-                        {type: "select", values: [1, 2, 3, 8]},
                         null,
-                        {type: "text"},
-                        {type: "text"}
+                        null,
+                        null,
+                        null
                     ]
                 }).on('draw.dt', function () {
                     $(".rate").rate(options);
