@@ -77,7 +77,7 @@
         var prev_rating = undefined;
         $('#upwork')
                 .dataTable({
-                    order: [2, 'desc'],
+                    order: [0, 'desc'],
                     ajax: '/get_data.php',
                     responsive: {
                         details: {
@@ -123,7 +123,7 @@
                                 $('.filter_date_range').find('input').val('').click();
                                 $('.filter_number_range').find('input').val('').click();
                                 $('#upwork').DataTable().search('').columns().search('');
-                                $('#upwork').DataTable().order([2, 'desc']).draw();
+                                $('#upwork').DataTable().order([0, 'desc']).draw();
                             }
                         },
                         {
@@ -207,7 +207,7 @@
                         {type: "select", values: [-1, 0, 1, 2, 3, 5]},
                         {type: "select", values: ['Fixed', 'Hourly']},
                         {type: "number-range", sRangeFormat: "Budget from {from} to {to}"},
-                        {type: "select", values: ['Full-time', 'Part-time', 'As needed']},
+                        {type: "text"},
                         null,
                         null,
                         null,
