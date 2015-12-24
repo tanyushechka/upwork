@@ -11,9 +11,9 @@
     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
     <link href="https://cdn.datatables.net/responsive/2.0.0/css/responsive.dataTables.min.css" rel="stylesheet">
 </head>
-<body>
+<body style="padding: 10px;">
 
-<table id="upwork" class="display  compact" cellspacing="0" width="100%">
+<table id="upwork" class="display compact" cellspacing="0" width="100%">
     <thead>
     <tr>
         <th>Created_at</th>
@@ -24,10 +24,10 @@
         <th>Budget</th>
         <th>Engagement</th>
         <th>EngagementWeeks</th>
-        <th>Id</th>
-        <th>Url</th>
-        <th>Description</th>
-        <th>Skills</th>
+        <th class="none">Id</th>
+        <th class="none">Url</th>
+        <th class="none">Description</th>
+        <th class="none">Skills</th>
     </tr>
     </thead>
     <tfoot>
@@ -47,6 +47,7 @@
     </tr>
     </tfoot>
 </table>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 <script src="http://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
 <script src="https://cdn.datatables.net/1.10.10/js/jquery.dataTables.min.js"></script>
@@ -79,6 +80,7 @@
                 .dataTable({
                     order: [0, 'desc'],
                     ajax: '/get_data.php',
+                    pageLength: 8,
                     responsive: {
                         details: {
                             display: $.fn.dataTable.Responsive.display.childRow,
@@ -140,7 +142,7 @@
                             }
                         }
                     ],
-                    "columns": [
+                      "columns": [
                         {
                             "data": {
                                 _: "created_at.display",
@@ -199,7 +201,8 @@
                             }
                     ]
                 }).columnFilter({
-                    sPlaceHolder: "head:before",
+//                    sPlaceHolder: "head:before",
+//                    sPlaceHolder: "head:after",
                     aoColumns: [
                         {type: "date-range", sRangeFormat: "Created between {from} and {to}"},
                         {type: "select", values: [0, 1, 2, 3, 4, 5]},
