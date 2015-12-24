@@ -18,7 +18,7 @@ class Upwork
 
     public static function findAll($db)
     {
-        $sql = 'SELECT * FROM upwork WHERE created_at>(UNIX_TIMESTAMP()-172800)';
+        $sql = 'SELECT * FROM `upwork` WHERE `created_at`>(UNIX_TIMESTAMP()-172800)';
         return $db->dbSelectObj($sql);
     }
 
