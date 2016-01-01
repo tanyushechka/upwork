@@ -6,7 +6,7 @@ function myAutoLoader($class) {
 		$classNameParts = explode('\\', $class);
 		if ('App' == $classNameParts[0]) {
 			unset($classNameParts[0]);
-			$filename = __DIR__ . '\\' . implode('\\', $classNameParts) . '.php';
+			$filename = __DIR__ . '/' . implode('/', $classNameParts) . '.php';
 
 			if (file_exists($filename)) {
 				require_once $filename;
